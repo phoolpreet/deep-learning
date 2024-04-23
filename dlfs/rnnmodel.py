@@ -2,7 +2,7 @@ from datetime import datetime
 import numpy as np
 import sys
 from rnnlayer import RNNLayer
-from softmax import Softmax
+from rnn.losses import Softmax
 
 
 class RNNModel:
