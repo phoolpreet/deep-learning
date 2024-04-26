@@ -5,7 +5,8 @@ class SquaredLoss:
     def forward(self, y_true: np.ndarray, y_pred: np.ndarray):
         assert y_true.shape == y_pred.shape
         loss = 0.5 * np.power((y_true - y_pred), 2)
-        return np.sum(loss) / y_pred.shape[0]
+        # return np.sum(loss) / y_pred.shape[0]
+        return np.sum(loss)
 
     def backward(self, y_true, y_pred):
         assert y_true.shape == y_pred.shape
