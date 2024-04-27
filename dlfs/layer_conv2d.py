@@ -3,6 +3,7 @@ from gate import MultiplyGate
 from gate import AddGate
 from optimizers import Optimizer
 from optimizers import Adam
+import math
 
 
 class Conv2D:
@@ -54,15 +55,56 @@ class Conv2D:
         )
         self.B = np.zeros((out_channel, 1))
 
+    def get_img2col_indices(
+        self,
+        img_channel: int,
+        img_height: int,
+        img_width: int,
+        filter_height: int,
+        filter_width: int,
+        padding_h: tuple,
+        padding_w: tuple,
+        stride: int,
+    ):
+        out_height = int((img_height + np.sum(padding_h) - filter_height) / stride + 1)
+        out_width = int((img_width + np.sum(padding_w) - filter_width) / stride + 1)
+        i0 = np.repeat(np.arange(filter_height), filter_width)
+        i0 = np.tile(i0, img_channel)
+        print(i0)
+
     def image_to_column(
         self,
-        X: np.ndarray,
+        X: np.ndarray,  # [batch, channel, height, width]
         filter_height: int,
         filter_width: int,
         padding: str,
         stride: int,
     ):
-        pass
+        # determine padding
+        assert padding in ["valid", "same"]
+        if padding == "valid":
+            pad_h = (0, 0)
+            pad_w = (0, 0)
+        elif padding == "same":
+            pad_h1 = int(math.floor((filter_height - 1) / 2))
+            pad_h2 = int(math.ceil((filter_height - 1) / 2))
+            pad_w1 = int(math.floor((filter_width - 1) / 2))
+            pad_w2 = int(math.ceil((filter_width - 1) / 2))
+            pad_h = (pad_h1, pad_h2)
+            pad_w = (pad_w1, pad_w2)
+
+        X_padded = np.pad(X, ((0, 0), (0, 0), pad_h, pad_w), mode="constant")
+        batch, img_channel, img_height, img_width = X.shape
+        self.get_img2col_indices(
+            img_channel,
+            img_height,
+            img_width,
+            filter_height,
+            filter_width,
+            pad_h,
+            pad_w,
+            stride,
+        )
 
     def forward(self, X: np.ndarray, is_training: bool):
         assert X.ndim == 4  # [batch size, n_channel, height, width]
@@ -76,4 +118,10 @@ class Conv2D:
         )
 
     def backward(self, accm_grad: np.ndarray):
-        raise NotImplementedError
+        pass
+
+
+if __name__ == "__main__":
+    conv2d = Conv2D(10, (5, 6), "same", 1, Adam, True)
+    X = np.random.randn(32, 3, 255, 200)
+    conv2d.forward(X, is_training=True)
