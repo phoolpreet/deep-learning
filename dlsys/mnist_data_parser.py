@@ -55,26 +55,26 @@ def parse_mnist(image_filename, label_filename):
         cols = int.from_bytes(file.read(4), byteorder="big")
         assert rows == 28
         assert cols == 28
-        X = np.ndarray( ( num_images, rows * cols), dtype=np.float32)
+        X = np.ndarray((num_images, rows * cols), dtype=np.float32)
         for i in range(num_images):
             img_data = []
-            for i in range(rows):
-                for j in range(cols):
-                    val = int.from_bytes(file.read(1), byteorder="big")
-                    img_data.append(val / 255)
+            for _ in range(rows * cols):
+                val = float(ord(file.read(1)))
+                img_data.append(val / 255)
             X[i] = img_data
     with open(label_filename, "rb") as file:
         magic_num = int.from_bytes(file.read(4), byteorder="big")
         num_labels = int.from_bytes(file.read(4), byteorder="big")
-        Y = np.ndarray( ( num_images, 1), dtype=np.int)
+        Y = np.ndarray(num_images, dtype=np.int)
         for i in range(num_labels):
-            Y[i] = int.from_bytes(file.read(1), byteorder="big")
+            Y[i] = int(ord(file.read(1)))
 
-        
+    return X, Y
 
 
 if __name__ == "__main__":
-    parse_mnist(
+    
+    X, Y = parse_mnist(
         "data_mnist/train-images-idx3-ubyte/train-images.idx3-ubyte",
         "data_mnist/train-labels-idx1-ubyte/train-labels.idx1-ubyte",
     )
