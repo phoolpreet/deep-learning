@@ -4,7 +4,6 @@ from matplotlib import pyplot as plt
 
 def softmax_loss(Z: np.ndarray, y: np.ndarray):
     """Return softmax loss.
-
     Args:
         Z (np.ndarray[np.float32]): 2D numpy array of shape
             (batch_size, num_classes), containing the logit predictions for
@@ -14,10 +13,8 @@ def softmax_loss(Z: np.ndarray, y: np.ndarray):
 
     Returns:
         Average softmax loss over the sample.
-
     # https://colab.research.google.com/github/dlsyscourse/hw0/blob/master/hw0.ipynb
     # https://www.youtube.com/watch?v=MlivXhZFbNA
-
     """
 
     batch_size = Z.shape[0]
@@ -29,6 +26,9 @@ def softmax_loss(Z: np.ndarray, y: np.ndarray):
     return loss.mean()
 
 
+'''
+Solves a classification problem
+'''
 class SoftmaxRegression:
     def __init__(
         self,
@@ -53,11 +53,11 @@ class SoftmaxRegression:
                 batch_x = X[i : min(i + batch_size, num_samples)]
                 batch_y = y[i : min(i + batch_size, num_samples)]
 
-                h = batch_x @ W  # linear hypothesis
-                h_exp = np.exp(h)
-                Z = h_exp / np.sum(h_exp, axis=1, keepdims=True)  # softmax
-                y_one_hot = np.zeros((batch_size, num_classes))
-                y_one_hot[np.arange(batch_size), batch_y] = 1
+                h_out = batch_x @ W                                 # linear hypothesis
+                h_exp = np.exp(h_out)
+                Z = h_exp / np.sum(h_exp, axis=1, keepdims=True)    # softmax
+                y_one_hot = np.zeros((batch_y.shape[0], num_classes))
+                y_one_hot[np.arange(batch_y.shape[0]), batch_y] = 1
                 dZ = Z - y_one_hot
 
                 dW = batch_x.T @ dZ
